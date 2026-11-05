@@ -1,0 +1,53 @@
+{
+  "$schema-note": "Raw color values for the warm-dark 'Clay' theme (PLAN-rev2 §4.1). SINGLE SOURCE OF TRUTH — src/design/tokens.ts and evals/checks/contrast.mjs both read this file. Every entry in `pairs` is a foreground/background combination the UI actually renders text or icons in; contrast.mjs enforces each pair's `minRatio` (4.5 = WCAG AA body text, 3.0 = WCAG AA large text / icons). Accents (xpGold/gemTeal/streakFlame/success) are used as large numerals and glyphs, so they declare 3.0; text tokens declare 4.5. Non-text decorative shades (clayPressed, border, muted-as-divider) are not listed as pairs because they carry no text or essential-boundary contrast requirement.",
+  "colors": {
+    "bg": "#1F1B16",
+    "bgElevated": "#2A251E",
+
+    "clay500": "#CC785C",
+    "clay400": "#E08A6B",
+    "clayPressed": "#A85C43",
+
+    "textPrimary": "#F5EFE6",
+    "textSecondary": "#B8AE9E",
+    "textMuted": "#A79D8C",
+    "textOnAccent": "#241812",
+
+    "xpGold": "#E5A63F",
+    "gemTeal": "#2F9E9B",
+    "streakFlame": "#E5703F",
+    "success": "#3F9B6E",
+    "info": "#5B8DEF",
+    "review": "#D98E32",
+
+    "border": "#3A342B",
+    "muted": "#6E6659"
+  },
+  "pairs": [
+    { "fg": "textPrimary", "bg": "bg", "minRatio": 4.5, "usage": "primary body text on base surface" },
+    { "fg": "textPrimary", "bg": "bgElevated", "minRatio": 4.5, "usage": "primary body text on cards" },
+    { "fg": "textSecondary", "bg": "bg", "minRatio": 4.5, "usage": "secondary body text on base surface" },
+    { "fg": "textSecondary", "bg": "bgElevated", "minRatio": 4.5, "usage": "secondary body text on cards" },
+    { "fg": "textMuted", "bg": "bg", "minRatio": 4.5, "usage": "low-emphasis helper text on base surface" },
+    { "fg": "textMuted", "bg": "bgElevated", "minRatio": 4.5, "usage": "low-emphasis helper text on cards" },
+
+    { "fg": "clay400", "bg": "bg", "minRatio": 4.5, "usage": "primary accent text / links / icons on base surface" },
+    { "fg": "clay400", "bg": "bgElevated", "minRatio": 4.5, "usage": "primary accent text / links / icons on cards" },
+    { "fg": "textOnAccent", "bg": "clay400", "minRatio": 4.5, "usage": "Button3D label on the clay face" },
+    { "fg": "textOnAccent", "bg": "clay500", "minRatio": 4.5, "usage": "Button3D label on the deeper clay variant" },
+
+    { "fg": "info", "bg": "bg", "minRatio": 4.5, "usage": "informational body text on base surface" },
+    { "fg": "info", "bg": "bgElevated", "minRatio": 4.5, "usage": "informational body text on cards" },
+    { "fg": "review", "bg": "bg", "minRatio": 4.5, "usage": "needs-review amber text on base surface (no harsh red)" },
+    { "fg": "review", "bg": "bgElevated", "minRatio": 4.5, "usage": "needs-review amber text on cards" },
+
+    { "fg": "xpGold", "bg": "bg", "minRatio": 3.0, "usage": "XP gold numerals / icons (large) on base surface" },
+    { "fg": "xpGold", "bg": "bgElevated", "minRatio": 3.0, "usage": "XP gold numerals / icons (large) on cards" },
+    { "fg": "gemTeal", "bg": "bg", "minRatio": 3.0, "usage": "gem teal count / icons (large) on base surface" },
+    { "fg": "gemTeal", "bg": "bgElevated", "minRatio": 3.0, "usage": "gem teal count / icons (large) on cards" },
+    { "fg": "streakFlame", "bg": "bg", "minRatio": 3.0, "usage": "streak flame count / icons (large) on base surface" },
+    { "fg": "streakFlame", "bg": "bgElevated", "minRatio": 3.0, "usage": "streak flame count / icons (large) on cards" },
+    { "fg": "success", "bg": "bg", "minRatio": 3.0, "usage": "correct-state sage glyph / label (large) on base surface" },
+    { "fg": "success", "bg": "bgElevated", "minRatio": 3.0, "usage": "correct-state sage glyph / label (large) on cards" }
+  ]
+}

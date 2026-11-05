@@ -1,0 +1,67 @@
+{
+  "note": "Single source of truth for domain weights + volume gates (GC-02). Weights CONFIRMED at Gate 0 against the official CCA-F Exam Guide v1.0 (effective July 2026), provided by the user 2026-07-13. Task statements: content/official-task-statements.md (30 total: 7/5/6/6/6).",
+  "status": "confirmed-gate-0-2026-07-13",
+  "item_format": "multiple-choice AND multiple-response; each item states how many responses to select; 4 scenarios per sitting from the bank of 6; score report shows percent-correct by domain",
+  "domains": {
+    "d1": "Agentic Architecture & Orchestration",
+    "d2": "Tool Design & MCP Integration",
+    "d3": "Claude Code Configuration & Workflows",
+    "d4": "Prompt Engineering & Structured Output",
+    "d5": "Context Management & Reliability"
+  },
+  "weights": { "d1": 27, "d2": 18, "d3": 20, "d4": 20, "d5": 15 },
+  "volume": {
+    "min_courses": 5,
+    "min_lessons": 50,
+    "min_unique_questions": 600,
+    "lesson_bank_target": 440,
+    "exam_register_total": 180,
+    "register_per_domain": { "d1": 49, "d2": 32, "d3": 36, "d4": 36, "d5": 27 },
+    "per_domain_tolerance_questions": 1,
+    "mock_forms": 3,
+    "mock_form_size": 60,
+    "mock_forms_pairwise_disjoint": true,
+    "mock_form_domain_targets": { "d1": 16, "d2": 11, "d3": 12, "d4": 12, "d5": 9 },
+    "mock_form_domain_tolerance": 1,
+    "mock_difficulty_floor": { "min_fraction_difficulty_2_plus": 0.6 },
+    "mini_exams": 5,
+    "mini_exam_size_range": [15, 20],
+    "mini_exams_by_reference": true,
+    "lesson_time_budget_seconds": 300,
+    "concept_key_points_range": [3, 5]
+  },
+  "estimated_seconds_defaults": {
+    "mc": 20, "multi": 30, "match": 40, "order": 30, "cloze": 30,
+    "scenario": 60, "explain-back": 90
+  },
+  "dupe_detection": {
+    "method": "normalized-stem trigram similarity",
+    "threshold": 0.5,
+    "threshold_status": "calibrated-m2",
+    "threshold_rationale": "M2 pilot (30 C1-U1 questions): clean gap between the distinct-pair max (0.312) and the 3 intentional variantOf siblings (min 0.680); T=0.5 sits mid-gap with margin on both sides.",
+    "variant_escape_hatch": "variantOf field, human-reviewed, logged in stats report"
+  },
+  "citation_allowlist": [
+    "platform.claude.com",
+    "docs.claude.com",
+    "docs.anthropic.com",
+    "code.claude.com",
+    "anthropic.com",
+    "www.anthropic.com",
+    "www-cdn.anthropic.com",
+    "claude.com",
+    "academy.claude.com",
+    "modelcontextprotocol.io",
+    "anthropic.skilljar.com",
+    "anthropic-partners.skilljar.com",
+    "everpath-course-content.s3-accelerate.amazonaws.com"
+  ],
+  "scenario_pool": [
+    "customer-support-resolution-agent",
+    "code-generation-claude-code",
+    "multi-agent-research-system",
+    "developer-productivity-tools",
+    "claude-code-ci-cd",
+    "structured-data-extraction"
+  ]
+}

@@ -1,0 +1,691 @@
+{
+  "project": "CCA Quest",
+  "schema": "decision-cockpit/1",
+  "written_by": "research->plan workflow wf_4775b0ae-f3a judge-revised ledger; ratified wholesale at plan approval 2026-07-13",
+  "cats": [
+    "Platform"
+  ],
+  "gateBlockerFlags": [],
+  "decisions": [
+    {
+      "id": "D1",
+      "title": "Expo dev-build from day one (never Expo Go)",
+      "full": "Scaffold with expo-dev-client 57.0.5; simulator for the inner loop, physical-device dev builds from Gate D (post-M3) onward.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Kept for dev-client ergonomics and the speech-recognition config plugin; the old 'forced by MMKV/nitro' rationale dissolved when those deps were cut per review.",
+      "decision": "Scaffold with expo-dev-client 57.0.5; simulator for the inner loop, physical-device dev builds from Gate D (post-M3) onward.",
+      "options": [
+        {
+          "name": "Expo dev-build from day one (never Expo Go)",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D2",
+      "title": "Bundle all course content as a build-time SQLite db; no content tables in Postgres",
+      "full": "Author content as typed TS modules validated by zod, compile to a bundled content.db; Postgres stores user state only, keyed by content slugs.",
+      "cat": "Platform",
+      "rev": "moderate",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "True offline-first (full lessons/mocks with no network), zero egress, zero RLS complexity for public content; server-fetched content can be added later without changing user-state keys.",
+      "decision": "Author content as typed TS modules validated by zod, compile to a bundled content.db; Postgres stores user state only, keyed by content slugs.",
+      "options": [
+        {
+          "name": "Bundle all course content as a build-time SQLite db; no content tables in Postgres",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D3",
+      "title": "Stable, append-only content slug IDs (deprecate, never rename or delete)",
+      "full": "Enforce an ID-registry validator that fails the build on any renamed/removed question or lesson slug; deprecation flag only.",
+      "cat": "Platform",
+      "rev": "hard",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "ONE-WAY DOOR: srs_reviews, user_progress, and exam_attempts key on these strings server-side; a rename silently orphans user data with no recovery path.",
+      "decision": "Enforce an ID-registry validator that fails the build on any renamed/removed question or lesson slug; deprecation flag only.",
+      "options": [
+        {
+          "name": "Stable, append-only content slug IDs (deprecate, never rename or delete)",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "now",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D4",
+      "title": "XP as append-only event log with idempotent replay; integrity via honest caps, not recomputation",
+      "full": "xp_events with client_event_id uuid UNIQUE + ON CONFLICT DO NOTHING replay; one-line total_xp SUM trigger; BEFORE INSERT trigger enforcing per-source amount caps and a generous per-day event ceiling; streaks are client-computed (single tested TS implementation) and synced as an LWW row.",
+      "cat": "Platform",
+      "rev": "hard",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Idempotent offline replay cannot be retrofitted and is the real load-bearing property. Amended per review: the 'tamper-proof leaderboard' claim is withdrawn \u2014 server-side streak re-derivation and anti-cheat theater are cut; caps are the honest, tested defense against fabricated amounts.",
+      "decision": "xp_events with client_event_id uuid UNIQUE + ON CONFLICT DO NOTHING replay; one-line total_xp SUM trigger; BEFORE INSERT trigger enforcing per-source amount caps and a generous per-day event ceiling; streaks are client-computed (single tested TS implementation) and synced as an LWW row.",
+      "options": [
+        {
+          "name": "XP as append-only event log with idempotent replay; integrity via honest caps, not recomputation",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "now",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D5",
+      "title": "Anonymous-first auth with email-OTP upgrade; default AsyncStorage session storage; no Sign in with Apple in v1",
+      "full": "signInAnonymously() on first launch (play before signup), later updateUser({email}) + 6-digit OTP via {{ .Token }} template; supabase-js default AsyncStorage storage; eval check asserts no JWT-shaped strings in persisted app stores.",
+      "cat": "Platform",
+      "rev": "moderate",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "LargeSecureStore/aes-js/get-random-values cut as threat-model theater for a study app on a passcode-locked personal phone (per review); OTP avoids deep-link config; anonymous-first matches ADHD low-friction onboarding. Progress-loss risk mitigated by early non-shaming link prompts.",
+      "decision": "signInAnonymously() on first launch (play before signup), later updateUser({email}) + 6-digit OTP via {{ .Token }} template; supabase-js default AsyncStorage storage; eval check asserts no JWT-shaped strings in persisted app stores.",
+      "options": [
+        {
+          "name": "Anonymous-first auth with email-OTP upgrade; default AsyncStorage session storage; no Sign in with Apple in v1",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D6",
+      "title": "Energy model fully specified: gates only new path-lesson starts, guaranteed recovery paths",
+      "full": "Max 5; mistakes in path lessons cost 1; 5-in-a-row restores 1; any practice/SRS completion restores 1; passive refill 1/45min; practice, SRS, mistake review, explain-back, and mocks NEVER consume or require energy; at 0 energy a one-tap warm-up-to-refill is always offered. Unit-tested invariant: a zero-cost study action is always available.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "The Rev-1 mechanic was undefined and therefore untestable (judge major); this spec makes energy a pacing meter with recovery paths, never a hard block or anxiety bar, and gives GC-04 a concrete oracle.",
+      "decision": "Max 5; mistakes in path lessons cost 1; 5-in-a-row restores 1; any practice/SRS completion restores 1; passive refill 1/45min; practice, SRS, mistake review, explain-back, and mocks NEVER consume or require energy; at 0 energy a one-tap warm-up-to-refill is always offered. Unit-tested invariant: a zero-cost study action is always available.",
+      "options": [
+        {
+          "name": "Energy model fully specified: gates only new path-lesson starts, guaranteed recovery paths",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D7",
+      "title": "NativeWind 4.2.6 for styling",
+      "full": "Tailwind-token theming; plain Reanimated styles inside hot animated components.",
+      "cat": "Platform",
+      "rev": "moderate",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Fastest iteration for a heavily custom game UI, most AI-codegen-friendly. Unistyles rejected: smaller community, extra nitro dependency, steeper API.",
+      "decision": "Tailwind-token theming; plain Reanimated styles inside hot animated components.",
+      "options": [
+        {
+          "name": "NativeWind 4.2.6 for styling",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D8",
+      "title": "Lottie as the single animation system (mascot, celebrations, AND confetti)",
+      "full": "lottie-react-native ~7.3.8 only; react-native-fast-confetti and @shopify/react-native-skia removed; never install '@rive-app/react-native-rn' (404 slopsquat \u2014 real name is rive-react-native).",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Three overlapping animation/particle systems collapsed to one per review; Skia was optional-and-unused; confetti ships as a free Lottie asset. Rive swappable later if an interactive state-machine mascot is wanted.",
+      "decision": "lottie-react-native ~7.3.8 only; react-native-fast-confetti and @shopify/react-native-skia removed; never install '@rive-app/react-native-rn' (404 slopsquat \u2014 real name is rive-react-native).",
+      "options": [
+        {
+          "name": "Lottie as the single animation system (mascot, celebrations, AND confetti)",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D9",
+      "title": "claude-haiku-4-5 with structured outputs for grading; triple spend guard",
+      "full": "Identity always resolved from the Authorization token (never from the body); atomic per-user quota (60/day) and atomic global daily budget (1,000/day) both reserved BEFORE the Anthropic call; hard monthly spend limit set on the API key in the Anthropic console at Gate B; 1,000-char transcript cap made unreachable by a client-side counter; quota exhaustion degrades to self-assessment mode, never an error dialog.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Fixes both data-isolation blockers: anonymous-account farming (per-user quotas cap nothing in aggregate without a global breaker) and the anon-key-is-a-valid-JWT hole in verify_jwt. Constrained rubric-matching doesn't need a bigger model; no prompt caching (below Haiku's 4,096-token cacheable minimum).",
+      "decision": "Identity always resolved from the Authorization token (never from the body); atomic per-user quota (60/day) and atomic global daily budget (1,000/day) both reserved BEFORE the Anthropic call; hard monthly spend limit set on the API key in the Anthropic console at Gate B; 1,000-char transcript cap made unreachable by a client-side counter; quota exhaustion degrades to self-assessment mode, never an error dialog.",
+      "options": [
+        {
+          "name": "claude-haiku-4-5 with structured outputs for grading; triple spend guard",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D10",
+      "title": "Blueprint weights as an explicit domain\u2192weight MAP: {d1:27, d2:18, d3:20, d4:20, d5:15}",
+      "full": "Ruling resolves the Rev-1 transposition in favor of the curriculum table (Tool Design & MCP 18%, Prompt Engineering 20%); GC-02 asserts per-domain counts within \u00b11 question of weight\u00d7pool for lesson bank, exam register, AND each mock form (16/11/12/12/9 \u00b11); provisional until Gate 0 confirms against the official exam guide, or a proceed-on-secondary sign-off is recorded here.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "An ordered tuple plus \u00b13% tolerance let a d2/d4 transposition pass silently (judge major); an explicit map with exact-target assertions makes the transposition class of bug impossible, and config placement makes the Gate 0 correction a data change.",
+      "decision": "Ruling resolves the Rev-1 transposition in favor of the curriculum table (Tool Design & MCP 18%, Prompt Engineering 20%); GC-02 asserts per-domain counts within \u00b11 question of weight\u00d7pool for lesson bank, exam register, AND each mock form (16/11/12/12/9 \u00b11); provisional until Gate 0 confirms against the official exam guide, or a proceed-on-secondary sign-off is recorded here.",
+      "options": [
+        {
+          "name": "Blueprint weights as an explicit domain\u2192weight MAP: {d1:27, d2:18, d3:20, d4:20, d5:15}",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D11",
+      "title": "One global weekly-XP leaderboard computed on read; league ladder deleted from v1",
+      "full": "Single SECURITY DEFINER get_leaderboard() RPC ranking all users by SUM(xp_events.amount) for the current ISO week; EXECUTE granted to authenticated only; 'beat your past week' solo view is the primary surface; leaderboard opt-out-able. No tiers, cohorts, ghosts, pg_cron, rollover function, or promote/demote engine.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Rev 1 built enterprise-scale league machinery for an app with one real user and then seeded it with fake members (judge major). The contract says 'real leaderboards', which this satisfies; xp_events already exists, so the full ladder is a clean later addition.",
+      "decision": "Single SECURITY DEFINER get_leaderboard() RPC ranking all users by SUM(xp_events.amount) for the current ISO week; EXECUTE granted to authenticated only; 'beat your past week' solo view is the primary surface; leaderboard opt-out-able. No tiers, cohorts, ghosts, pg_cron, rollover function, or promote/demote engine.",
+      "options": [
+        {
+          "name": "One global weekly-XP leaderboard computed on read; league ladder deleted from v1",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D12",
+      "title": "Local scheduled notifications only; operationally-defined anti-nag",
+      "full": "expo-notifications local reminders; 'ignored' = fire time passed with no app session before the next daily scheduling pass; any session resets the counter; auto-mute after 5; at most 5 notifications ever scheduled ahead (mute horizon pre-applied since no code runs while ignored); streak nudge fires at min(habitual hour, quiet-start \u2212 1h), quiet hours win otherwise; permission primed after first lesson completion.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Fixes the judge finding that the auto-mute was built on a signal iOS doesn't provide (delivery/dismissal is unobservable with local notifications); free Apple ID has no push entitlement anyway.",
+      "decision": "expo-notifications local reminders; 'ignored' = fire time passed with no app session before the next daily scheduling pass; any session resets the counter; auto-mute after 5; at most 5 notifications ever scheduled ahead (mute horizon pre-applied since no code runs while ignored); streak nudge fires at min(habitual hour, quiet-start \u2212 1h), quiet hours win otherwise; permission primed after first lesson completion.",
+      "options": [
+        {
+          "name": "Local scheduled notifications only; operationally-defined anti-nag",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D13",
+      "title": "Local Docker Supabase for all dev/tests; single hosted free-tier project deployed at Gate A with abuse protections",
+      "full": "All migrations/tests run against supabase start; link + db push to hosted after M9; enable anonymous sign-in per-IP rate limits + CAPTCHA/Turnstile at Gate A.",
+      "cat": "Platform",
+      "rev": "moderate",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Keeps the autonomous build loop unblocked by human account setup; abuse protections are the Supabase-recommended precondition for anonymous sign-ins and the second layer against quota farming. Known risk: free-tier projects pause after ~1 week of inactivity.",
+      "decision": "All migrations/tests run against supabase start; link + db push to hosted after M9; enable anonymous sign-in per-IP rate limits + CAPTCHA/Turnstile at Gate A.",
+      "options": [
+        {
+          "name": "Local Docker Supabase for all dev/tests; single hosted free-tier project deployed at Gate A with abuse protections",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D14",
+      "title": "No-shame contract as enforceable evals, now covering runtime LLM output and streak/notification framing",
+      "full": "Banned-copy lint over src/ + content/ PLUS a runtime banned-vocabulary filter (with templated fallback) on grader-generated next_step_hint/misconception, tested by a shame probe; streak state machine pauses-then-warm-archives (never 'breaks'); 'danger'/'lose your streak'/'about to break' added to the banned list; commitment feature is gain-framed only.",
+      "cat": "Platform",
+      "rev": "moderate",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Rev 1's lint had a hole: LLM-generated text reached the screen unlinted at the user's most vulnerable moment (judge major). Deliberate product stance trading retention dark patterns for wellbeing, signed off via this plan.",
+      "decision": "Banned-copy lint over src/ + content/ PLUS a runtime banned-vocabulary filter (with templated fallback) on grader-generated next_step_hint/misconception, tested by a shame probe; streak state machine pauses-then-warm-archives (never 'breaks'); 'danger'/'lose your streak'/'about to break' added to the banned list; commitment feature is gain-framed only.",
+      "options": [
+        {
+          "name": "No-shame contract as enforceable evals, now covering runtime LLM output and streak/notification framing",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D15",
+      "title": "Tiered mascot/SFX asset plan (bespoke Lottie character NOT assumed)",
+      "full": "Tier 1 (v1): static AI-generated Archie illustrations (6 poses) animated with Reanimated; Tier 2 (v1): free LottieFiles celebration animations for confetti/chests/flame; Tier 3 (post-v1): commissioned custom Lottie set. SFX from a named CC0 library (Kenney) committed with LICENSES.md.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "A custom-character Lottie set cannot be pulled from free libraries or authored to quality by a coding agent (judge major); the tiered fallback de-risks the single deliverable the addictive-loop premise rests on.",
+      "decision": "Tier 1 (v1): static AI-generated Archie illustrations (6 poses) animated with Reanimated; Tier 2 (v1): free LottieFiles celebration animations for confetti/chests/flame; Tier 3 (post-v1): commissioned custom Lottie set. SFX from a named CC0 library (Kenney) committed with LICENSES.md.",
+      "options": [
+        {
+          "name": "Tiered mascot/SFX asset plan (bespoke Lottie character NOT assumed)",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D16",
+      "title": "Dictation via expo-speech-recognition, with a pre-decided typed-only fallback",
+      "full": "Add expo-speech-recognition (config plugin, NSMicrophoneUsageDescription + NSSpeechRecognitionUsageDescription) verified for SDK-57 compat at M1; dictated and typed explain-back are equal-class inputs; GC-14 device checklist covers the permission prompts. If compat fails at M1, v1 ships typed-only and this entry records it.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Dictation is load-bearing for the low-friction Feynman default path (free-typing on a phone keyboard is exactly what makes explain-back skippable); the explicit M1 compat check + fallback answers the judge's native-dependency schedule risk.",
+      "decision": "Add expo-speech-recognition (config plugin, NSMicrophoneUsageDescription + NSSpeechRecognitionUsageDescription) verified for SDK-57 compat at M1; dictated and typed explain-back are equal-class inputs; GC-14 device checklist covers the permission prompts. If compat fails at M1, v1 ships typed-only and this entry records it.",
+      "options": [
+        {
+          "name": "Dictation via expo-speech-recognition, with a pre-decided typed-only fallback",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D17",
+      "title": "Single warm-dark theme in v1",
+      "full": "Ship only the warm-dark theme (fits evening study); keep tokens semantic so the light theme is purely additive later; confirm preference with the user at Gate D.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Halves the contrast-check surface and removes a QA lane for a single-user v1 (judge minor); the user can simply be asked.",
+      "decision": "Ship only the warm-dark theme (fits evening study); keep tokens semantic so the light theme is purely additive later; confirm preference with the user at Gate D.",
+      "options": [
+        {
+          "name": "Single warm-dark theme in v1",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D18",
+      "title": "Transparent reward economy: guaranteed floors, bounded RNG, published odds, defined gem sinks",
+      "full": "Chest tiers bronze/silver/gold (silver requires explain-back completion) with bounded random gem payouts and occasional cosmetic drops; odds published in-app; no money purchases, no near-miss animations; sinks: extra streak freezes, Archie cosmetics, 2\u00d7 XP boost windows \u2014 priced within earnable range at the stated daily goal; payout tables in a config module with GC-04 tests.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Rev 1 had gems with no sink and an unspecified fixed-ratio schedule (judge majors); bounded variability on top of guaranteed floors delivers dopamine-friendly variable rewards while staying auditable against dark-pattern risk.",
+      "decision": "Chest tiers bronze/silver/gold (silver requires explain-back completion) with bounded random gem payouts and occasional cosmetic drops; odds published in-app; no money purchases, no near-miss animations; sinks: extra streak freezes, Archie cosmetics, 2\u00d7 XP boost windows \u2014 priced within earnable range at the stated daily goal; payout tables in a config module with GC-04 tests.",
+      "options": [
+        {
+          "name": "Transparent reward economy: guaranteed floors, bounded RNG, published odds, defined gem sinks",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D19",
+      "title": "Feynman explain-back as the contract-protected default path (GC-15)",
+      "full": "~30-second 'teach Archie one sentence' micro-prompt on the default path; skip requires an explicit tap (tracked, never punished); completion upgrades the chest bronze\u2192silver; ceremony is optimistic (never awaits grading); XP identical whether graded, degraded, or offline; gap\u2192refine cycle integration-tested; concept-card key-point IDs round-trip byte-identical to the grader's rubric.",
+      "cat": "Platform",
+      "rev": "moderate",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "Under Rev 1's own economics the rational move was to always skip the headline pedagogy (judge blocker); this makes the Feynman loop the incentivized default with acceptance criteria, while keeping the no-shame skip escape hatch.",
+      "decision": "~30-second 'teach Archie one sentence' micro-prompt on the default path; skip requires an explicit tap (tracked, never punished); completion upgrades the chest bronze\u2192silver; ceremony is optimistic (never awaits grading); XP identical whether graded, degraded, or offline; gap\u2192refine cycle integration-tested; concept-card key-point IDs round-trip byte-identical to the grader's rubric.",
+      "options": [
+        {
+          "name": "Feynman explain-back as the contract-protected default path (GC-15)",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    },
+    {
+      "id": "D20",
+      "title": "Onboarding minimized: exam date \u2192 daily goal \u2192 first lesson; placement quiz and wager cut",
+      "full": "Cut the placement quiz (start-from-scratch only; the path unlocks by progress) and the commitment wager (replaced by the gain-framed in-app commitment goal, M8); exam date is actually consumed by pacing.ts (days-to-exam + required weekly pace on the predicted-score dial, feeding quest sizing); notification permission primed after the first lesson.",
+      "cat": "Platform",
+      "rev": "easy",
+      "status": "ruled",
+      "statusNote": "Ratified 2026-07-13 via user plan approval (ExitPlanMode) covering the full decisions ledger",
+      "contested": false,
+      "invariant": null,
+      "context": "The placement quiz had zero producing tasks (judge major) and serves a user who knows he's starting from scratch; the wager was an unspecified loss-aversion mechanic conflicting with GC-13; collected-but-unused exam date was friction without payoff.",
+      "decision": "Cut the placement quiz (start-from-scratch only; the path unlocks by progress) and the commitment wager (replaced by the gain-framed in-app commitment goal, M8); exam date is actually consumed by pacing.ts (days-to-exam + required weekly pace on the predicted-score dial, feeding quest sizing); notification permission primed after the first lesson.",
+      "options": [
+        {
+          "name": "Onboarding minimized: exam date \u2192 daily goal \u2192 first lesson; placement quiz and wager cut",
+          "chosen": true,
+          "pro": [],
+          "con": []
+        }
+      ],
+      "triggers": "",
+      "sources": [
+        "PLAN-rev2.md#6-decisions-ledger"
+      ],
+      "gate": "signed contract",
+      "urgency": "next",
+      "dependencies": {
+        "influences": [],
+        "dependsOn": [],
+        "validates": [],
+        "gates": []
+      },
+      "gateBlockers": {}
+    }
+  ]
+}

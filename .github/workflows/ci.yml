@@ -1,0 +1,105 @@
+name: evals
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    # Public Cloudflare always-pass test credential; production uses a deployment secret instead.
+    env:
+      TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # secret-scan needs full history
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install gitleaks
+        run: |
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      - name: Install semgrep
+        # 1.171.0 failed to expose the semgrep-core binary on this runner image.
+        # Keep CI deterministic on the last repository-proven release.
+        run: pipx install semgrep==1.170.0 && semgrep --version
+
+      - name: Install osv-scanner
+        run: |
+          curl -sSL "https://github.com/google/osv-scanner/releases/download/v2.4.0/osv-scanner_linux_amd64" \
+            -o /tmp/osv-scanner && sudo install /tmp/osv-scanner /usr/local/bin/osv-scanner
+          osv-scanner --version
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else echo "no manifest yet"; fi
+
+      - name: Type check and lint
+        run: npm run typecheck && npm run lint
+
+      # Every app suite. The eval gate below runs only the criterion subsets, so without this step
+      # most component and state tests would never run in CI.
+      - name: Unit, component and state tests
+        run: npx jest --ci --selectProjects expo
+
+      - name: Content checks
+        run: npm run content:validate
+
+      - name: Release preflight (the App Store build stays local-only)
+        run: npm run release:check
+
+      - name: Build (iOS JS bundle)
+        run: npx expo export --platform ios --output-dir dist
+
+      # Keep the committed SMTP block production-ready, but route this disposable local stack to
+      # Mailpit so the OTP integration test never contacts Resend or needs its deployment secret.
+      - name: Use local email capture for auth tests
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'supabase/config.toml';
+          const source = fs.readFileSync(path, 'utf8');
+          const productionBlock = '[auth.email.smtp]\nenabled = true\n';
+          if (source.split(productionBlock).length !== 2) {
+            throw new Error('Expected exactly one enabled production SMTP block');
+          }
+          fs.writeFileSync(path, source.replace(productionBlock, '[auth.email.smtp]\nenabled = false\n'));
+          NODE
+
+      - name: Start local Supabase for sync, auth, and RLS gates
+        run: npx supabase start -x realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+
+      # Full-output pre-run of the GC-09 suite: evals/run.sh captures per-criterion output into
+      # truncated notes, so a red GC-09 in the gate is undiagnosable from the CI log alone. This
+      # step is diagnostics only — the gate below remains the enforcement.
+      - name: GC-09 functions suite (full output)
+        env:
+          CI: "true"
+        run: npm run test:functions
+
+      - name: Run eval gate (milestone ratchet)
+        env:
+          CI: "true"
+        run: bash evals/run.sh --gate
+
+      - name: Stop local Supabase
+        if: always()
+        run: npx supabase stop --no-backup
+
+      - name: Upload evals.json
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evals-report
+          path: evals.json

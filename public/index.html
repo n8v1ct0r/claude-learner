@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0B0B0C" />
+    <title>Claude Learner</title>
+    <meta name="description" content="Bite-size lessons for learning Claude. 649 practice questions written for this app. Not official exam content. Not affiliated with Anthropic." />
+    <script>
+      // A returning learner (onboarding complete) opens on the Learn tab, which needs the lesson content:
+      // start downloading it now, alongside the scripts. A first visit opens on onboarding, which does
+      // not, so there the app fetches it after that screen is up (src/db/content-provider.web.tsx).
+      //
+      // A visitor who has not started onboarding opens on its first step: mark the page so the
+      // build-time render of that step (#web-prerender, below) shows until the app takes over.
+      try {
+        var saved = JSON.parse(localStorage.getItem('cca-quest:settings') || 'null');
+        var step = saved && saved.state ? saved.state.onboardingStep : null;
+        if (!saved || step === 'exam-date') document.documentElement.classList.add('cl-first-step');
+        if (saved && (step === undefined || step === 'complete')) {
+          var link = document.createElement('link');
+          link.rel = 'preload';
+          link.href = '/content.json';
+          link.as = 'fetch';
+          link.crossOrigin = 'anonymous';
+          document.head.appendChild(link);
+        }
+      } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- The strip's mono face is decoration: load its stylesheet without blocking the first paint (the
+         strip shows ui-monospace until it arrives; display=swap). -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" /></noscript>
+    <style id="expo-reset">
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        overflow: hidden;
+        background: #141210;
+        color: #f5efe6;
+      }
+      ::selection {
+        background: rgba(224, 138, 107, 0.4);
+        color: #f5efe6;
+      }
+
+      /* Shared honesty strip (nate-victor/shared/STRIP.md). */
+      [data-honesty-strip] {
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: 32px;
+        z-index: 10;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 16px;
+        background: #0b0b0c;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        color: rgba(237, 237, 237, 0.72);
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 11px;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+      }
+      [data-honesty-strip] a {
+        color: inherit;
+        text-decoration: none;
+      }
+      [data-honesty-strip] a:hover,
+      [data-honesty-strip] a:focus-visible {
+        color: #ededed;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      [data-honesty-strip] .strip-project {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      [data-honesty-strip] .strip-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: help;
+      }
+      [data-honesty-strip] .strip-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #9b8cff;
+        flex: none;
+      }
+
+      /* Stage: full screen on a phone, a phone-width column on desktop. */
+      .stage {
+        position: fixed;
+        inset: 32px 0 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+      .device {
+        position: relative;
+        display: flex;
+        width: 390px;
+        height: min(844px, calc(100% - 104px));
+        overflow: hidden;
+        border-radius: 28px;
+        background: #1f1b16;
+        border: 1px solid rgba(245, 239, 230, 0.1);
+        box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+        transform: translateZ(0); /* contain position:fixed children inside the device */
+      }
+      #root {
+        display: flex;
+        flex: 1;
+        height: 100%;
+        min-width: 0;
+      }
+      /* Web splash: the native app holds a splash until the first screen settles; this is the web
+         equivalent. src/components/splash.ts removes it at the same moment. The Nunito faces are
+         filled in at build time by scripts/web-postexport.mjs (hashed asset paths). */
+      /*__WEB_SPLASH_FONTS__*/
+      #web-splash {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 12px;
+        padding: 0 32px;
+        background: #1f1b16;
+      }
+      /* The onboarding screen's first step as the app renders it, generated at build time
+         (scripts/web-postexport.mjs). Shown only to a visitor who opens on that step, over the plain
+         splash; it goes when the splash does, revealing the identical live screen beneath. */
+      #web-prerender {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: none;
+        background: #1f1b16;
+      }
+      .cl-first-step #web-prerender {
+        display: flex;
+      }
+      /* The plain splash text it covers is not shown either (and is not the page's first content). */
+      .cl-first-step #web-splash:has(#web-prerender) > p {
+        visibility: hidden;
+      }
+      #web-splash .splash-title {
+        margin: 0;
+        font-family: 'Nunito_800ExtraBold', ui-rounded, system-ui, sans-serif;
+        font-size: 34px;
+        line-height: 40px;
+        color: #f5efe6;
+      }
+      #web-splash .splash-line {
+        margin: 0;
+        font-family: 'Nunito_400Regular', ui-rounded, system-ui, sans-serif;
+        font-size: 20px;
+        line-height: 28px;
+        color: #b8ae9e;
+      }
+      #web-splash .splash-status {
+        margin: 12px 0 0;
+        font-family: 'Nunito_600SemiBold', ui-rounded, system-ui, sans-serif;
+        font-size: 14px;
+        color: #e08a6b;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        #web-splash .splash-status {
+          animation: splash-pulse 1.4s ease-in-out infinite alternate;
+        }
+      }
+      @keyframes splash-pulse {
+        from { opacity: 1; }
+        to { opacity: 0.45; }
+      }
+      .stage-note {
+        margin: 0;
+        text-align: center;
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 11px;
+        line-height: 1.5;
+        letter-spacing: 0.02em;
+        color: rgba(237, 237, 237, 0.56);
+      }
+      @media (max-width: 520px), (max-height: 640px) {
+        .stage {
+          gap: 0;
+          justify-content: stretch;
+        }
+        .device {
+          width: 100%;
+          height: 100%;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+        .stage-note {
+          display: none;
+        }
+      }
+      @media (max-width: 520px) {
+        [data-honesty-strip] .strip-project {
+          display: none;
+        }
+      }
+      /* Keep both the link and the full label on one line at 360 to 400px. */
+      @media (max-width: 420px) {
+        [data-honesty-strip] {
+          padding: 0 12px;
+          font-size: 10px;
+          letter-spacing: 0.02em;
+        }
+        [data-honesty-strip] .strip-label {
+          gap: 6px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div data-honesty-strip>
+      <a href="https://nate-victor.com">Nate Victor / Sidequest 05</a>
+      <span class="strip-project">Claude Learner</span>
+      <span
+        class="strip-label"
+        title="Lessons and 649 practice questions are bundled in the page. Teach-back grading is a word-match demo, not Claude. Progress stays in this browser. No account."
+        ><span class="strip-dot" aria-hidden="true"></span>DEMO &middot; offline, no account</span
+      >
+    </div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <main class="stage">
+      <div class="device">
+        <div id="web-splash">
+          <p class="splash-title">Claude Learner</p>
+          <p class="splash-line">Bite-size lessons and practice questions for learning Claude.</p>
+          <p class="splash-status" role="status">Loading lessons</p>
+          <!--__WEB_PRERENDER__-->
+        </div>
+        <div id="root"></div>
+      </div>
+      <p class="stage-note">
+        Practice questions written for this app. Not official exam content.
+      </p>
+    </main>
+  </body>
+</html>

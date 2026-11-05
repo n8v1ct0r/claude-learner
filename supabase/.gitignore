@@ -1,0 +1,11 @@
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
+
+# Edge function secrets — the real ANTHROPIC_API_KEY lives here (GC-08); .env.example is committed.
+functions/.env

@@ -1,0 +1,60 @@
+{
+  "note": "Milestone ratchet for evals/run.sh --gate (CI + milestone PRs). Criteria always ALL run and report; only 'enforced' ones gate the exit code. Grow this list in the same PR as the feature that makes a criterion green. Full-contract mode (no flag) always requires all 17.",
+  "milestone": "m10",
+  "enforced": [
+    "GC-01",
+    "GC-02",
+    "GC-03",
+    "GC-04",
+    "GC-05",
+    "GC-06",
+    "GC-07",
+    "GC-08",
+    "GC-09",
+    "GC-10",
+    "GC-11",
+    "GC-12",
+    "GC-13",
+    "GC-15",
+    "sec-deps",
+    "sec-sast"
+  ],
+  "enforced_locally_only": {},
+  "ratchet_plan": {
+    "m1": [
+      "+GC-11"
+    ],
+    "m2": [
+      "+GC-01 (pilot scope)",
+      "+GC-13 copy-lint half"
+    ],
+    "m3": [
+      "+GC-03",
+      "+GC-04"
+    ],
+    "m4": [
+      "+GC-10"
+    ],
+    "m5": [
+      "+GC-02 full thresholds (after Gate 0)"
+    ],
+    "m7": [
+      "+GC-05"
+    ],
+    "m8": [
+      "+GC-13 full"
+    ],
+    "m9": [
+      "+GC-06",
+      "+GC-07",
+      "+GC-12"
+    ],
+    "m10": [
+      "+GC-09",
+      "+GC-15"
+    ],
+    "m11": [
+      "+GC-14 via manual status"
+    ]
+  }
+}

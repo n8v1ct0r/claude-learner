@@ -1,0 +1,33 @@
+# GC-08 gitleaks config — extends the default ruleset with the project-specific secrets.
+# The Supabase anon/publishable key is a JWT that is ALLOWED in the bundle (RLS is the boundary);
+# service_role JWT detection is therefore done by payload decode in secret-scan.sh, not by a
+# blanket JWT regex here (which would false-positive on the allowed anon key).
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API key"
+regex = '''sk-ant-[A-Za-z0-9_\-]{16,}'''
+keywords = ["sk-ant-"]
+
+[[rules]]
+id = "supabase-secret-key"
+description = "Supabase secret API key (sb_secret_)"
+regex = '''sb_secret_[A-Za-z0-9_\-]{16,}'''
+keywords = ["sb_secret_"]
+
+[[rules]]
+id = "supabase-service-role-literal"
+description = "Literal service_role key assignment"
+regex = '''(?i)service_role[_a-z]*\s*[:=]\s*['"][A-Za-z0-9._\-]{20,}['"]'''
+keywords = ["service_role"]
+
+[allowlist]
+description = "Project allowlist"
+paths = [
+  '''node_modules''',
+  '''evals/checks/gitleaks\.toml''',
+  '''\.git/''',
+]

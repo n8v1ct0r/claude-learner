@@ -1,0 +1,28 @@
+{
+  "note": "GC-13 no-shame vocabulary. copy-lint.mjs (lands M2) scans user-facing strings in src/ and content/; the runtime filter in the app applies the same list to LLM-generated hint text with a templated fallback. Matching is case-insensitive substring on rendered copy.",
+  "banned": [
+    "wrong!",
+    "incorrect!",
+    "you failed",
+    "failed!",
+    "lazy",
+    "you lost",
+    "don't let",
+    "danger",
+    "lose your streak",
+    "about to break",
+    "streak is in danger",
+    "last chance",
+    "shame",
+    "disappointed",
+    "you should have",
+    "falling behind",
+    "everyone else",
+    "only you haven't"
+  ],
+  "preferred_reframes": {
+    "wrong": "Not quite — added to your review deck",
+    "streak reminder": "Archie saved your streak — 5 min keeps it warm",
+    "welcome back": "Welcome back. Let's warm up with 10 quick cards."
+  }
+}

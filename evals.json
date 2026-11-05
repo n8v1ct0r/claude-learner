@@ -1,0 +1,162 @@
+{
+  "project": "CCA Quest",
+  "last_run": "2026-09-25T05:56:00+00:00",
+  "git_sha": "62f6d40ed8b4c1c834b5a6f789a699f013fa88a9",
+  "written_by": "evals/run.sh ONLY \u2014 hand edits violate Iron Law 2",
+  "mode": "full",
+  "criteria": [
+    {
+      "id": "GC-01",
+      "type": "code",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "content:validate \u2014 all checks PASS"
+    },
+    {
+      "id": "GC-02",
+      "type": "code",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "RESULT: PASS \u2014 all GC-02 volume gates met, no structural violations."
+    },
+    {
+      "id": "GC-03",
+      "type": "e2e",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /lesson-flow/i."
+    },
+    {
+      "id": "GC-04",
+      "type": "code",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /engine/i."
+    },
+    {
+      "id": "GC-05",
+      "type": "e2e",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /mock-exam/i."
+    },
+    {
+      "id": "GC-06",
+      "type": "e2e",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /sync/i in 2 projects."
+    },
+    {
+      "id": "GC-07",
+      "type": "security",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /rls/i in 2 projects."
+    },
+    {
+      "id": "GC-08",
+      "type": "security",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "secret-scan clean (canary verified, history + worktree + artifacts + JWT-role decode)"
+    },
+    {
+      "id": "GC-09",
+      "type": "security",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /functions/i."
+    },
+    {
+      "id": "GC-10",
+      "type": "code",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "contrast: OK \u2014 all 22 pairs meet their WCAG minimum (4.5 body / 3.0 large)."
+    },
+    {
+      "id": "GC-11",
+      "type": "code",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "ok"
+    },
+    {
+      "id": "GC-12",
+      "type": "e2e",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /auth-lifecycle/i."
+    },
+    {
+      "id": "GC-13",
+      "type": "code",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /notifications/i."
+    },
+    {
+      "id": "GC-14",
+      "type": "e2e",
+      "hard": true,
+      "status": "red",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Gate D (first device install + pilot lesson) and Gate C (full device checklist) not yet executed \u2014 see docs/device-verification.md"
+    },
+    {
+      "id": "GC-15",
+      "type": "e2e",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "Ran all test suites matching /feynman-loop/i."
+    },
+    {
+      "id": "sec-deps",
+      "type": "security",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "osv-scanner: no unexcused high/critical findings (ecosystem severity labels)"
+    },
+    {
+      "id": "sec-sast",
+      "type": "security",
+      "hard": true,
+      "status": "green",
+      "measured": null,
+      "threshold": "see GOAL.md",
+      "notes": "semgrep: no ERROR-severity findings"
+    }
+  ]
+}

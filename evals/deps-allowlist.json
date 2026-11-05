@@ -1,0 +1,19 @@
+{
+  "_comment": "Owner-approved sec-deps exceptions. Each entry excuses exactly one advisory ID in one package until its expiry date; after that the gate fails again. Changes to this file are contract re-opens and must be logged in .engineering/DECISIONS.md.",
+  "exceptions": [
+    {
+      "id": "GHSA-5p2g-fcmc-qvqq",
+      "package": "image-size",
+      "reason": "Transitive via metro (JS bundler). DoS in the JXL/HEIF parsers; only the repo's own assets are parsed, at build time. No fix is compatible with metro's image-size 1.x API.",
+      "approved": "2026-09-24",
+      "expires": "2026-12-23"
+    },
+    {
+      "id": "GHSA-w3rx-r6r6-pgpr",
+      "package": "image-size",
+      "reason": "Transitive via metro (JS bundler). DoS in the ICNS parser; only the repo's own assets are parsed, at build time. No fix is compatible with metro's image-size 1.x API.",
+      "approved": "2026-09-24",
+      "expires": "2026-12-23"
+    }
+  ]
+}
