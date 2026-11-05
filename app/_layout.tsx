@@ -16,6 +16,7 @@ import { ErrorRecovery } from '@/components/ErrorRecovery';
 import { GestureRoot } from '@/components/GestureRoot';
 import { forceHideAppSplash } from '@/components/splash';
 import { ContentProvider } from '@/db/content-provider';
+import { pushEnter } from '@/design/screen-transition';
 import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
 import { registerAppOpen } from '@/services/local-notifications';
 import { SyncBootstrap } from '@/sync/SyncBootstrap';
@@ -110,9 +111,15 @@ export default function RootLayout() {
                 without an animation. The screen deep-links out. */}
             <Stack.Screen name="onboarding" options={{ presentation: 'card', gestureEnabled: false, animation: 'none' }} />
             {/* Full-screen lesson player (no tab bar) — the Feynman spine lives here. */}
-            <Stack.Screen name="lesson/[lessonId]" options={{ presentation: 'card' }} />
+            <Stack.Screen
+              name="lesson/[lessonId]"
+              options={{ presentation: 'card', contentStyle: [{ backgroundColor: '#1F1B16' }, pushEnter] }}
+            />
             {/* Full-screen, energy-free unit review — re-serves a unit's questions (PLAN-rev2 §4.4). */}
-            <Stack.Screen name="review/[unitId]" options={{ presentation: 'card' }} />
+            <Stack.Screen
+              name="review/[unitId]"
+              options={{ presentation: 'card', contentStyle: [{ backgroundColor: '#1F1B16' }, pushEnter] }}
+            />
           </Stack>
         </ContentProvider>
       </ThemeProvider>

@@ -40,6 +40,31 @@
     />
     <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" /></noscript>
     <style id="expo-reset">
+      /* The page is a demo stage: on a desktop the real app runs inside a drawn iPhone with a side panel
+         (same presentation as the USVC demo, nate-victor Sidequest 06). On a phone the app fills the
+         screen under the honesty strip. No iframe: the app root lives in the page, so the prerendered
+         first step paints with the HTML and nothing waits on a second document. */
+      :root {
+        --stage: #141210;
+        --app-bg: #1f1b16;
+        --ink: #f5efe6;
+        --ink-2: #b8ae9e;
+        --ink-3: #9a907f;
+        --line: rgba(245, 239, 230, 0.1);
+        --clay: #e08a6b;
+        --bezel: #0b0b0c;
+        --strip-h: 32px;
+        /* Room the drawn home indicator needs under the tab bar. A real phone reports its own. */
+        --home: env(safe-area-inset-bottom, 0px);
+        --sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        --rounded: 'Nunito_800ExtraBold', ui-rounded, -apple-system, BlinkMacSystemFont, sans-serif;
+        --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
       html,
       body {
         height: 100%;
@@ -47,21 +72,38 @@
       }
       body {
         overflow: hidden;
-        background: #141210;
-        color: #f5efe6;
+        background: var(--stage);
+        color: var(--ink);
+        font: 400 16px/1.5 var(--sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior: none;
       }
       ::selection {
         background: rgba(224, 138, 107, 0.4);
-        color: #f5efe6;
+        color: var(--ink);
+      }
+      a {
+        color: inherit;
+        text-underline-offset: 3px;
+      }
+      :focus-visible {
+        outline: 2px solid var(--clay);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+      input,
+      textarea {
+        caret-color: var(--clay);
       }
 
       /* Shared honesty strip (nate-victor/shared/STRIP.md). */
       [data-honesty-strip] {
         position: fixed;
         inset: 0 0 auto 0;
-        height: 32px;
+        height: var(--strip-h);
         z-index: 10;
-        box-sizing: border-box;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -70,7 +112,7 @@
         background: #0b0b0c;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         color: rgba(237, 237, 237, 0.72);
-        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-family: var(--mono);
         font-size: 11px;
         line-height: 1;
         text-transform: uppercase;
@@ -90,6 +132,7 @@
       [data-honesty-strip] .strip-project {
         overflow: hidden;
         text-overflow: ellipsis;
+        min-width: 0;
       }
       [data-honesty-strip] .strip-label {
         display: inline-flex;
@@ -105,26 +148,225 @@
         flex: none;
       }
 
-      /* Stage: full screen on a phone, a phone-width column on desktop. */
+      /* Stage */
       .stage {
         position: fixed;
-        inset: 32px 0 0 0;
+        inset: var(--strip-h) 0 0 0;
+        display: grid;
+        place-items: center;
+        background: var(--stage);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 340px) auto;
+        align-items: center;
+        gap: clamp(48px, 7vw, 112px);
+      }
+
+      /* Side panel. It follows the phone in the page (the app is the main content, and a text search
+         finds the app's own copy first) but sits to its left on a wide screen. */
+      .aside {
+        order: -1;
+      }
+      .aside h1 {
+        margin: 0;
+        font: 400 48px/1.02 var(--rounded);
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+      }
+      .lede {
+        margin: 20px 0 0;
+        color: var(--ink-2);
+        max-width: 32ch;
+      }
+      .honest {
+        margin: 16px 0 0;
+        color: var(--ink);
+        font-weight: 600;
+        max-width: 34ch;
+      }
+      .try {
+        margin: 32px 0 0;
+        padding: 0;
+        list-style: none;
+        border-top: 1px solid var(--line);
+      }
+      .try li {
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 12px;
+        align-items: start;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink-2);
+      }
+      .try li strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .try svg {
+        width: 22px;
+        height: 22px;
+        margin-top: 1px;
+        stroke: var(--clay);
+        fill: none;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+      .btn {
+        appearance: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font: 600 14px/1 var(--sans);
+        letter-spacing: -0.005em;
+        text-decoration: none;
+        border: 1px solid rgba(245, 239, 230, 0.16);
+        background: transparent;
+        color: var(--ink);
+        transition:
+          background-color 160ms var(--ease-out),
+          border-color 160ms var(--ease-out),
+          scale 120ms var(--ease-out);
+      }
+      .btn:hover {
+        background: rgba(245, 239, 230, 0.06);
+        border-color: rgba(245, 239, 230, 0.28);
+      }
+      .btn:active {
+        scale: 0.97;
+      }
+      .fine {
+        margin: 20px 0 0;
+        color: var(--ink-3);
+        font-size: 14px;
+        max-width: 34ch;
+      }
+
+      /* Phone. The height follows the window so the whole phone always fits; the width is a real
+         iPhone's 390 point screen, so the app lays out exactly as it does on one. */
+      .phone {
+        --phone-h: min(892px, calc(100vh - var(--strip-h) - 48px));
+        position: relative;
+        width: 414px;
+        height: var(--phone-h);
+        padding: 12px;
+        border-radius: 66px;
+        background: var(--bezel);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+          inset 0 0 0 4px #1a1a1c,
+          0 40px 80px -20px rgba(0, 0, 0, 0.6),
+          0 18px 36px -18px rgba(0, 0, 0, 0.65);
+        animation: rise 900ms var(--ease-out) both;
+      }
+      /* Side buttons, drawn on the bezel edge. */
+      .phone::before,
+      .phone::after {
+        content: '';
+        position: absolute;
+        width: 3px;
+        border-radius: 2px;
+        background: #1a1a1c;
+      }
+      .phone::before {
+        left: -3px;
+        top: 168px;
+        height: 64px;
+        box-shadow: 0 84px 0 #1a1a1c;
+      }
+      .phone::after {
+        right: -3px;
+        top: 200px;
+        height: 96px;
+      }
+      @keyframes rise {
+        from {
+          translate: 0 18px;
+          opacity: 0.001;
+          filter: blur(6px);
+        }
+        to {
+          translate: 0 0;
+          opacity: 1;
+          filter: blur(0);
+        }
+      }
+      .screen {
+        --home: 20px;
+        position: relative;
+        width: 390px;
+        height: 100%;
+        border-radius: 54px;
+        overflow: hidden;
+        background: var(--app-bg);
         display: flex;
         flex-direction: column;
+        /* Contain position: fixed descendants (portals, overlays) inside the drawn screen. */
+        transform: translateZ(0);
+      }
+      .statusbar {
+        position: relative;
+        height: 50px;
+        flex: none;
+        display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 14px;
+        justify-content: space-between;
+        padding: 4px 32px 0 50px;
+        color: var(--ink);
+        background: var(--app-bg);
+        font: 600 16px/1 var(--sans);
+        letter-spacing: -0.01em;
+        font-variant-numeric: tabular-nums;
+      }
+      .statusbar svg {
+        display: block;
+        fill: currentColor;
+      }
+      .sb-icons {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .island {
+        position: absolute;
+        top: 11px;
+        left: 50%;
+        width: 122px;
+        height: 35px;
+        margin-left: -61px;
+        border-radius: 20px;
+        background: #000;
+      }
+      .home-indicator {
+        position: absolute;
+        left: 50%;
+        bottom: 8px;
+        width: 134px;
+        height: 5px;
+        margin-left: -67px;
+        border-radius: 3px;
+        background: rgba(245, 239, 230, 0.6);
+        pointer-events: none;
+        z-index: 5;
       }
       .device {
         position: relative;
         display: flex;
-        width: 390px;
-        height: min(844px, calc(100% - 104px));
+        flex: 1;
+        min-height: 0;
         overflow: hidden;
-        border-radius: 28px;
-        background: #1f1b16;
-        border: 1px solid rgba(245, 239, 230, 0.1);
-        box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+        background: var(--app-bg);
         transform: translateZ(0); /* contain position:fixed children inside the device */
       }
       #root {
@@ -133,6 +375,46 @@
         height: 100%;
         min-width: 0;
       }
+
+      /* App polish, web only (native keeps its own platform behavior). */
+      /* iOS draws overlay scrollbars that vanish at rest. */
+      .device * {
+        scrollbar-width: none;
+      }
+      .device *::-webkit-scrollbar {
+        display: none;
+      }
+      /* Press feedback in place of a haptic: a quick 3% squeeze. `scale` composes with the inline
+         transforms React Native Web writes, so the 3D buttons still sink as before. */
+      .device [role='button'],
+      .device [role='tab'],
+      .device [role='checkbox'],
+      .device [role='radio'],
+      .device [role='switch'] {
+        transition: scale 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      .device [role='button']:active,
+      .device [role='tab']:active,
+      .device [role='checkbox']:active,
+      .device [role='radio']:active,
+      .device [role='switch']:active {
+        scale: 0.97;
+      }
+      /* Tab bar: a hairline instead of the 2pt rule, slightly translucent, and room for the home
+         indicator below the labels. */
+      .device div:has(> [role='tablist']) {
+        height: calc(76px + var(--home)) !important;
+        padding-bottom: calc(7px + var(--home)) !important;
+        border-top-width: 1px !important;
+        border-top-color: rgba(245, 239, 230, 0.09) !important;
+        background-color: rgba(42, 37, 30, 0.92) !important;
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        backdrop-filter: saturate(180%) blur(20px);
+        box-shadow: 0 -8px 24px -12px rgba(0, 0, 0, 0.5) !important;
+      }
+
       /* Web splash: the native app holds a splash until the first screen settles; this is the web
          equivalent. src/components/splash.ts removes it at the same moment. The Nunito faces are
          filled in at build time by scripts/web-postexport.mjs (hashed asset paths). */
@@ -147,7 +429,7 @@
         justify-content: center;
         gap: 12px;
         padding: 0 32px;
-        background: #1f1b16;
+        background: var(--app-bg);
       }
       /* The onboarding screen's first step as the app renders it, generated at build time
          (scripts/web-postexport.mjs). Shown only to a visitor who opens on that step, over the plain
@@ -157,7 +439,7 @@
         inset: 0;
         z-index: 1;
         display: none;
-        background: #1f1b16;
+        background: var(--app-bg);
       }
       .cl-first-step #web-prerender {
         display: flex;
@@ -171,20 +453,20 @@
         font-family: 'Nunito_800ExtraBold', ui-rounded, system-ui, sans-serif;
         font-size: 34px;
         line-height: 40px;
-        color: #f5efe6;
+        color: var(--ink);
       }
       #web-splash .splash-line {
         margin: 0;
         font-family: 'Nunito_400Regular', ui-rounded, system-ui, sans-serif;
         font-size: 20px;
         line-height: 28px;
-        color: #b8ae9e;
+        color: var(--ink-2);
       }
       #web-splash .splash-status {
         margin: 12px 0 0;
         font-family: 'Nunito_600SemiBold', ui-rounded, system-ui, sans-serif;
         font-size: 14px;
-        color: #e08a6b;
+        color: var(--clay);
       }
       @media (prefers-reduced-motion: no-preference) {
         #web-splash .splash-status {
@@ -192,35 +474,91 @@
         }
       }
       @keyframes splash-pulse {
-        from { opacity: 1; }
-        to { opacity: 0.45; }
-      }
-      .stage-note {
-        margin: 0;
-        text-align: center;
-        font-family: 'IBM Plex Mono', ui-monospace, monospace;
-        font-size: 11px;
-        line-height: 1.5;
-        letter-spacing: 0.02em;
-        color: rgba(237, 237, 237, 0.56);
-      }
-      @media (max-width: 520px), (max-height: 640px) {
-        .stage {
-          gap: 0;
-          justify-content: stretch;
+        from {
+          opacity: 1;
         }
-        .device {
-          width: 100%;
-          height: 100%;
-          border: 0;
-          border-radius: 0;
-          box-shadow: none;
+        to {
+          opacity: 0.45;
         }
-        .stage-note {
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .phone {
+          animation: none;
+        }
+        .device [role='button']:active,
+        .device [role='tab']:active,
+        .device [role='checkbox']:active,
+        .device [role='radio']:active,
+        .device [role='switch']:active,
+        .btn:active {
+          scale: none;
+        }
+      }
+
+      /* Tablet and small laptop: the phone only, the honesty line and controls under it. */
+      @media (max-width: 1000px) {
+        .layout {
+          grid-template-columns: auto;
+          gap: 16px;
+          justify-items: center;
+        }
+        .aside {
+          order: 2;
+          text-align: center;
+        }
+        .aside h1,
+        .lede,
+        .try,
+        .fine {
           display: none;
         }
+        .honest {
+          margin: 0 auto;
+          font-size: 14px;
+        }
+        .controls {
+          justify-content: center;
+          margin-top: 12px;
+        }
+        .phone {
+          --phone-h: min(892px, calc(100vh - var(--strip-h) - 160px));
+        }
       }
-      @media (max-width: 520px) {
+
+      /* Phone (or a very short window): the app fills the screen under the strip. */
+      @media (max-width: 600px), (max-height: 640px) {
+        .stage {
+          display: block;
+          background: var(--app-bg);
+        }
+        .layout {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+        .aside,
+        .statusbar,
+        .home-indicator,
+        .phone::before,
+        .phone::after {
+          display: none;
+        }
+        .phone {
+          width: 100%;
+          height: 100%;
+          padding: 0;
+          border-radius: 0;
+          box-shadow: none;
+          background: transparent;
+          animation: none;
+        }
+        .screen {
+          --home: env(safe-area-inset-bottom, 0px);
+          width: 100%;
+          border-radius: 0;
+        }
+      }
+      @media (max-width: 600px) {
         [data-honesty-strip] .strip-project {
           display: none;
         }
@@ -251,18 +589,66 @@
     </div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <main class="stage">
-      <div class="device">
-        <div id="web-splash">
-          <p class="splash-title">Claude Learner</p>
-          <p class="splash-line">Bite-size lessons and practice questions for learning Claude.</p>
-          <p class="splash-status" role="status">Loading lessons</p>
-          <!--__WEB_PRERENDER__-->
+      <div class="layout">
+
+        <div class="phone">
+          <div class="screen">
+            <div class="statusbar" aria-hidden="true">
+              <span>9:41</span>
+              <span class="island"></span>
+              <span class="sb-icons">
+                <svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx="0.8" /><rect x="5" y="5" width="3" height="6" rx="0.8" /><rect x="10" y="2.5" width="3" height="8.5" rx="0.8" /><rect x="15" y="0" width="3" height="11" rx="0.8" /></svg>
+                <svg width="16" height="11" viewBox="0 0 16 11"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.1-1.2A10.2 10.2 0 0 0 8 .6 10.2 10.2 0 0 0 .9 3.4L2 4.6a8.6 8.6 0 0 1 6-2.4Zm0 3.2c1.4 0 2.7.5 3.7 1.4l1.1-1.2A7 7 0 0 0 8 3.8a7 7 0 0 0-4.8 1.8l1.1 1.2c1-.9 2.3-1.4 3.7-1.4Zm0 3.2c.6 0 1.1.2 1.5.6L8 10.8 6.5 9.2c.4-.4.9-.6 1.5-.6Z" /></svg>
+                <svg width="27" height="12" viewBox="0 0 27 12"><rect x="0.5" y="0.5" width="23" height="11" rx="3.2" fill="none" stroke="currentColor" opacity="0.4" /><rect x="2" y="2" width="20" height="8" rx="2" /><path d="M25 4v4c.8-.3 1.4-1.1 1.4-2s-.6-1.7-1.4-2Z" opacity="0.45" /></svg>
+              </span>
+            </div>
+            <div class="device">
+              <div id="web-splash">
+                <p class="splash-title">Claude Learner</p>
+                <p class="splash-line">Bite-size lessons and practice questions for learning Claude.</p>
+                <p class="splash-status" role="status">Loading lessons</p>
+                <!--__WEB_PRERENDER__-->
+              </div>
+              <div id="root"></div>
+            </div>
+            <span class="home-indicator" aria-hidden="true"></span>
+          </div>
         </div>
-        <div id="root"></div>
+
+        <section class="aside" aria-labelledby="title">
+          <h1 id="title">Claude Learner</h1>
+          <p class="lede">Bite-size lessons for learning Claude, built as an iPhone app. This is the real app build, running in your browser.</p>
+          <p class="honest">Practice questions written for this app. Not official exam content.</p>
+          <ul class="try" aria-label="Try this">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3" /><path d="M4 10h16M9 3v4M15 3v4" /></svg>
+              <span><strong>Pick a pace.</strong> Answer the two setup questions.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="m8.5 12.2 2.4 2.4 4.6-5" /></svg>
+              <span><strong>Answer a question.</strong> Start the first lesson and make a decision.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.6 3.2 5 5.4 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.6 2.4-4.6.3 1.8 1.2 2.8 2.2 3.1C11 9 11.2 5.6 12 3Z" /></svg>
+              <span><strong>Finish the lesson.</strong> Explain it back in a sentence, then see your XP and streak.</span>
+            </li>
+          </ul>
+          <div class="controls">
+            <button class="btn" type="button" data-action="restart">Start over</button>
+            <a class="btn" href="https://github.com/n8v1ct0r/claude-learner" target="_blank" rel="noopener">Code</a>
+          </div>
+          <p class="fine">Lessons and questions are bundled in the page. Progress stays in this browser. No account. Start over clears it.</p>
+        </section>
       </div>
-      <p class="stage-note">
-        Practice questions written for this app. Not official exam content.
-      </p>
     </main>
+    <script>
+      // Start over: progress lives only in this browser (AsyncStorage on web is localStorage).
+      document.querySelector('[data-action="restart"]').addEventListener('click', function () {
+        try {
+          localStorage.clear();
+        } catch (e) {}
+        location.replace('/');
+      });
+    </script>
   </body>
 </html>

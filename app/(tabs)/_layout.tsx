@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 
 import { TabIcon } from '@/components/TabIcon';
+import { tabEnter } from '@/design/screen-transition';
 import { colors } from '@/design/tokens';
 
 export default function TabsLayout() {
@@ -26,7 +27,7 @@ export default function TabsLayout() {
           shadowOpacity: 0.3,
           shadowRadius: 10,
         },
-        sceneStyle: { backgroundColor: colors.bg },
+        sceneStyle: [{ backgroundColor: colors.bg }, tabEnter],
       }}
     >
       <Tabs.Screen
